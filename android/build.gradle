@@ -14,7 +14,7 @@ buildscript {
             jcenter()
         }
         dependencies {
-            classpath 'com.android.tools.build:gradle:3.4.1'
+            classpath 'com.android.tools.build:gradle:3..1'
         }
     }
 }
@@ -113,9 +113,15 @@ afterEvaluate { project ->
     }
 
     android.libraryVariants.all { variant ->
+    def compileTask
+        if (variant.hasProperty('javaCompileProvider')) {
+            compileTask = variant.javaCompileProvider.get()
+        } else {
+            compileTask = variant.javaCompile
+        }
         def name = variant.name.capitalize()
         task "jar${name}"(type: Jar, dependsOn: variant.javaCompileProvider) {
-            from variant.javaCompileProvider.destinationDir
+            from compileTask.destinationDir
         }
     }
 
